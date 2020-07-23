@@ -6,6 +6,7 @@ import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -97,11 +98,21 @@ public class ManageEmployeeController {
 
         while (rst.next()){
             Button btnDelete = new Button("Delete");
-            tblEmployee.getItems().add(new EmployeeTM(rst.getString(1),
+            EmployeeTM emp = new EmployeeTM(rst.getString(1),
                     rst.getString(2),
                     rst.getBigDecimal(3),
                     rst.getBigDecimal(4),
-                    btnDelete));
+                    btnDelete);
+            btnDelete.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    tblEmployee.getItems().remove(emp);
+                    reset(true,true);
+                    btnSave.setDisable(true);
+                    // Let's delete
+                }
+            });
+            tblEmployee.getItems().add(emp);
         }
     }
 
@@ -157,6 +168,11 @@ public class ManageEmployeeController {
 
         BigDecimal salary = new BigDecimal(txtSalary.getText());
         BigDecimal etf = new BigDecimal(txtETF.getText().substring(0, txtETF.getText().length() -1));
+        if (btnSave.getText().equals("Save")){
+            // Let's save
+        }else{
+            // Let's update
+        }
     }
 
     private boolean validate(){
