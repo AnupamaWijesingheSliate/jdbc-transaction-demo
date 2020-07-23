@@ -45,18 +45,6 @@ public class ManageEmployeeController {
         connection.close();
     }
 
-    public void txtId(ActionEvent actionEvent) {
-    }
-
-    public void txtName(ActionEvent actionEvent) {
-    }
-
-    public void txtSalary(ActionEvent actionEvent) {
-    }
-
-    public void txtETF(ActionEvent actionEvent) {
-    }
-
     public void btnSave_OnAction(ActionEvent actionEvent) {
     }
 }
