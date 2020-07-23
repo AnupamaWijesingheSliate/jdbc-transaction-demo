@@ -6,7 +6,9 @@ import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
@@ -149,14 +151,24 @@ public class ManageEmployeeController {
     }
 
     public void btnSave_OnAction(ActionEvent actionEvent) {
-        String id = txtId.getText();
-        String name = txtName.getText();
-
-
+        if (!validate()){
+            return;
+        }
 
         BigDecimal salary = new BigDecimal(txtSalary.getText());
-        BigDecimal etf = new BigDecimal(txtETF.getText());
+        BigDecimal etf = new BigDecimal(txtETF.getText().substring(0, txtETF.getText().length() -1));
+    }
 
-
+    private boolean validate(){
+        if (!txtName.getText().matches("[A-Za-z ]+")){
+            new Alert(Alert.AlertType.ERROR,"Invalid employee name", ButtonType.OK).show();
+            txtName.requestFocus();
+            return false;
+        }else if (!txtSalary.getText().matches("[0-9]+[.]?[0-9]*")){
+            new Alert(Alert.AlertType.ERROR,"Invalid employee salary", ButtonType.OK).show();
+            txtSalary.requestFocus();
+            return false;
+        }
+        return true;
     }
 }
