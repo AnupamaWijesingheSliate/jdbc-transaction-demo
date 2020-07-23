@@ -26,17 +26,20 @@ public class ManageEmployeeController {
     public JFXTextField txtSalary;
     public JFXTextField txtETF;
     public JFXButton btnNewEmployee;
+    public JFXButton btnSave;
 
     public void initialize() {
         txtId.setEditable(false);
         txtETF.setEditable(false);
         reset(true, true);
+        btnSave.setDisable(true);
 
         tblEmployee.getColumns().get(0).setCellValueFactory(new PropertyValueFactory<>("id"));
         tblEmployee.getColumns().get(1).setCellValueFactory(new PropertyValueFactory<>("name"));
         tblEmployee.getColumns().get(2).setCellValueFactory(new PropertyValueFactory<>("salary"));
         tblEmployee.getColumns().get(3).setCellValueFactory(new PropertyValueFactory<>("etf"));
         tblEmployee.getColumns().get(4).setCellValueFactory(new PropertyValueFactory<>("btnDelete"));
+        tblEmployee.getColumns().get(4).setStyle("-fx-alignment: center");
 
         try {
             loadAllEmployees();
@@ -59,6 +62,29 @@ public class ManageEmployeeController {
                 }
             }
         });
+
+        tblEmployee.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EmployeeTM>() {
+            @Override
+            public void changed(ObservableValue<? extends EmployeeTM> observable, EmployeeTM oldValue, EmployeeTM emp) {
+                if (emp == null) {
+                    btnSave.setText("Save");
+                    return;
+                }
+
+                btnSave.setDisable(false); // In case if it has been already disabled
+                btnSave.setText("Update");
+                txtId.setDisable(false);
+                txtName.setDisable(false);
+                txtSalary.setDisable(false);
+                txtName.setEditable(false);
+                txtSalary.setEditable(false);
+
+                txtId.setText(emp.getId());
+                txtName.setText(emp.getName());
+                txtSalary.setText(emp.getSalary().toPlainString());
+                txtETF.setText(emp.getEtf().toPlainString());
+            }
+        });
     }
 
     private void loadAllEmployees() throws SQLException {
@@ -68,7 +94,7 @@ public class ManageEmployeeController {
                 "INNER JOIN Employee_ETF EE on E.id = EE.id");
 
         while (rst.next()){
-            Button btnDelete = new Button("DEL");
+            Button btnDelete = new Button("Delete");
             tblEmployee.getItems().add(new EmployeeTM(rst.getString(1),
                     rst.getString(2),
                     rst.getBigDecimal(3),
@@ -78,8 +104,11 @@ public class ManageEmployeeController {
     }
 
     private void reset(boolean clearId, boolean focusToNewEmployee) {
+        btnSave.setDisable(false);
         txtName.setDisable(false);
+        txtName.setEditable(true);
         txtSalary.setDisable(false);
+        txtSalary.setEditable(true);
         if (clearId) {
             txtId.clear();
             txtName.setDisable(true);
@@ -89,6 +118,8 @@ public class ManageEmployeeController {
         txtSalary.clear();
         txtETF.clear();
         tblEmployee.getSelectionModel().clearSelection();
+        btnSave.setText("Save");
+        txtSalary.setPromptText("Employee Salary"); // In case if it has changed to "Invalid salary"
         if (focusToNewEmployee) {
             btnNewEmployee.requestFocus();
         }
@@ -98,6 +129,7 @@ public class ManageEmployeeController {
         try {
             generateNewEmployeeID();
             reset(false, false);
+            txtName.requestFocus();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -117,5 +149,14 @@ public class ManageEmployeeController {
     }
 
     public void btnSave_OnAction(ActionEvent actionEvent) {
+        String id = txtId.getText();
+        String name = txtName.getText();
+
+
+
+        BigDecimal salary = new BigDecimal(txtSalary.getText());
+        BigDecimal etf = new BigDecimal(txtETF.getText());
+
+
     }
 }
