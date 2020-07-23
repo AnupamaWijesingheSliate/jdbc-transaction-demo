@@ -16,7 +16,7 @@
             <Font size="22.0" />
          </font>
       </Label>
-      <JFXButton layoutX="32.0" layoutY="56.0" onAction="#btnNewEmployee_OnAction" style="-fx-background-color: blue; -fx-text-fill: white;" text="New Employee +" />
+      <JFXButton fx:id="btnNewEmployee" layoutX="32.0" layoutY="56.0" onAction="#btnNewEmployee_OnAction" style="-fx-background-color: blue; -fx-text-fill: white;" text="New Employee +" />
       <JFXTextField labelFloat="true" layoutX="32.0" layoutY="96.0" fx:id="txtId" prefHeight="26.0" prefWidth="457.0" promptText="Employee ID" />
       <JFXTextField labelFloat="true" layoutX="32.0" layoutY="139.0" fx:id="txtName" prefHeight="26.0" prefWidth="457.0" promptText="Employee Name" />
       <JFXTextField labelFloat="true" layoutX="32.0" layoutY="187.0" fx:id="txtSalary" prefHeight="26.0" prefWidth="326.0" promptText="Employee Salary" />
