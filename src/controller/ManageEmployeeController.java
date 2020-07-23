@@ -2,6 +2,7 @@ package controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import com.sun.javaws.exceptions.ErrorCodeResponseException;
 import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,10 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import util.EmployeeTM;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class ManageEmployeeController {
     public AnchorPane root;
@@ -170,6 +168,59 @@ public class ManageEmployeeController {
         BigDecimal etf = new BigDecimal(txtETF.getText().substring(0, txtETF.getText().length() -1));
         if (btnSave.getText().equals("Save")){
             // Let's save
+            Connection connection = DBConnection.getInstance().getConnection();
+
+            try {
+                /* Let's start the transaction */
+                connection.setAutoCommit(false);
+                PreparedStatement pstm = connection.prepareStatement("INSERT INTO Employee VALUES (?,?)");
+                pstm.setObject(1,txtId.getText());
+                pstm.setObject(2,txtName.getText());
+                int affectedRows = pstm.executeUpdate();
+                if (affectedRows == 0){
+                   connection.rollback();
+                   return;
+                }
+
+//                if (true) {
+//                    throw new Error("Pissu hadei");
+//                }
+
+                pstm = connection.prepareStatement("INSERT INTO Employee_Salary VALUES (?,?)");
+                pstm.setObject(1,txtId.getText());
+                pstm.setObject(2,salary);
+                affectedRows = pstm.executeUpdate();
+                if (affectedRows == 0){
+                    connection.rollback();
+                    return;
+                }
+
+                pstm = connection.prepareStatement("INSERT INTO Employee_ETF VALUES (?,?)");
+                pstm.setObject(1,txtId.getText());
+                pstm.setObject(2,etf);
+                affectedRows = pstm.executeUpdate();
+                if (affectedRows == 0){
+                    connection.rollback();
+                    return;
+                }
+
+                connection.commit();
+                loadAllEmployees();
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+                try {
+                    connection.rollback();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }finally{
+                try {
+                    connection.setAutoCommit(true);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+            }
+
         }else{
             // Let's update
         }
@@ -187,4 +238,5 @@ public class ManageEmployeeController {
         }
         return true;
     }
+
 }
