@@ -2,7 +2,6 @@ package controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
-import com.sun.javaws.exceptions.ErrorCodeResponseException;
 import db.DBConnection;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -65,6 +64,7 @@ public class ManageEmployeeController {
         });
 
         tblEmployee.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<EmployeeTM>() {
+
             @Override
             public void changed(ObservableValue<? extends EmployeeTM> observable, EmployeeTM oldValue, EmployeeTM emp) {
                 if (emp == null) {
@@ -94,7 +94,7 @@ public class ManageEmployeeController {
         ResultSet rst = stm.executeQuery("SELECT E.id, E.name, ES.salary, EE.eft FROM Employee E INNER JOIN Employee_Salary ES on E.id = ES.id\n" +
                 "INNER JOIN Employee_ETF EE on E.id = EE.id");
 
-        while (rst.next()){
+        while (rst.next()) {
             Button btnDelete = new Button("Delete");
             EmployeeTM emp = new EmployeeTM(rst.getString(1),
                     rst.getString(2),
@@ -105,9 +105,9 @@ public class ManageEmployeeController {
                 @Override
                 public void handle(ActionEvent event) {
                     tblEmployee.getItems().remove(emp);
-                    reset(true,true);
+                    reset(true, true);
                     btnSave.setDisable(true);
-                    // Let's delete
+                    // Todo: Delete an employee
                 }
             });
             tblEmployee.getItems().add(emp);
@@ -154,85 +154,113 @@ public class ManageEmployeeController {
 
         if (rst.next()) {
             String lastEmployeeId = rst.getString(1);
+
+            /* If you are curious about this line, just go and check this link
+             * https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html
+             * Do you self-study part here, because I won't be behind you always.
+             * */
             newEmployeeId = String.format("E%03d", (Integer.parseInt(lastEmployeeId.substring(1)) + 1));
         }
         txtId.setText(newEmployeeId);
     }
 
     public void btnSave_OnAction(ActionEvent actionEvent) {
-        if (!validate()){
+        if (!validate()) {
             return;
         }
 
         BigDecimal salary = new BigDecimal(txtSalary.getText());
-        BigDecimal etf = new BigDecimal(txtETF.getText().substring(0, txtETF.getText().length() -1));
-        if (btnSave.getText().equals("Save")){
-            // Let's save
+        BigDecimal etf = new BigDecimal(txtETF.getText().substring(0, txtETF.getText().length() - 1));
+        if (btnSave.getText().equals("Save")) {
+
+            /* Let's save */
             Connection connection = DBConnection.getInstance().getConnection();
 
             try {
+
                 /* Let's start the transaction */
                 connection.setAutoCommit(false);
+
+                /* Saving the Employee */
                 PreparedStatement pstm = connection.prepareStatement("INSERT INTO Employee VALUES (?,?)");
-                pstm.setObject(1,txtId.getText());
-                pstm.setObject(2,txtName.getText());
+                pstm.setObject(1, txtId.getText());
+                pstm.setObject(2, txtName.getText());
                 int affectedRows = pstm.executeUpdate();
-                if (affectedRows == 0){
-                   connection.rollback();
-                   return;
+                if (affectedRows == 0) {
+
+                    /* For some weird reason if it doesn't work, let's remove everything from the buffer */
+                    connection.rollback();
+                    return;
                 }
 
+                /* Play with these */
 //                if (true) {
 //                    throw new Error("Pissu hadei");
 //                }
+//                if (true) {
+//                    throw new Exception("Pissu hadei");
+//                }
 
+                /* Saving the Employee's Salary */
                 pstm = connection.prepareStatement("INSERT INTO Employee_Salary VALUES (?,?)");
-                pstm.setObject(1,txtId.getText());
-                pstm.setObject(2,salary);
+                pstm.setObject(1, txtId.getText());
+                pstm.setObject(2, salary);
                 affectedRows = pstm.executeUpdate();
-                if (affectedRows == 0){
+                if (affectedRows == 0) {
                     connection.rollback();
                     return;
                 }
 
+                /* Saving the Employee'e ETF */
                 pstm = connection.prepareStatement("INSERT INTO Employee_ETF VALUES (?,?)");
-                pstm.setObject(1,txtId.getText());
-                pstm.setObject(2,etf);
+                pstm.setObject(1, txtId.getText());
+                pstm.setObject(2, etf);
                 affectedRows = pstm.executeUpdate();
-                if (affectedRows == 0){
+                if (affectedRows == 0) {
                     connection.rollback();
                     return;
                 }
 
+                /* If everything works perfectly, time to commit everything */
                 connection.commit();
+
+                /* This is not a good practice, but I am too lazy you know */
                 loadAllEmployees();
             } catch (Throwable ex) {
+
+                /* Try to find answer for the following questions?
+                 * Why have we used Throwable here?
+                 * What is the purpose of this catch block? */
+
+                /* Don't forget to add the printStackTrace() method, it is really useful in
+                 * the development mode */
                 ex.printStackTrace();
                 try {
                     connection.rollback();
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
-            }finally{
+            } finally {
                 try {
+                    /* Time to reset the auto commit mode to it's default state */
                     connection.setAutoCommit(true);
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                 }
             }
 
-        }else{
-            // Let's update
+        } else {
+            // Todo: Update an employee details
         }
     }
 
-    private boolean validate(){
-        if (!txtName.getText().matches("[A-Za-z ]+")){
-            new Alert(Alert.AlertType.ERROR,"Invalid employee name", ButtonType.OK).show();
+    private boolean validate() {
+        if (!txtName.getText().matches("[A-Za-z ]+")) {
+            new Alert(Alert.AlertType.ERROR, "Invalid employee name", ButtonType.OK).show();
             txtName.requestFocus();
             return false;
-        }else if (!txtSalary.getText().matches("[0-9]+[.]?[0-9]*")){
-            new Alert(Alert.AlertType.ERROR,"Invalid employee salary", ButtonType.OK).show();
+        } else if (!txtSalary.getText().matches("[0-9]+[.]?[0-9]*")) {
+            new Alert(Alert.AlertType.ERROR, "Invalid employee salary", ButtonType.OK).show();
             txtSalary.requestFocus();
             return false;
         }
