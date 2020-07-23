@@ -9,6 +9,11 @@ public class ManageEmployeeController {
     public TableView tblEmployee;
 
     public void btnNewEmployee_OnAction(ActionEvent actionEvent) {
+        generateNewEmployeeID();
+    }
+
+    private void generateNewEmployeeID() {
+
     }
 
     public void txtId(ActionEvent actionEvent) {
