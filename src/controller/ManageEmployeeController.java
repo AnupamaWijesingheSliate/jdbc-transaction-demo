@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Formatter;
 
 public class ManageEmployeeController {
     public AnchorPane root;
@@ -29,7 +28,9 @@ public class ManageEmployeeController {
         txtId.setEditable(false);
         txtETF.setEditable(false);
         reset(true, true);
+
         txtSalary.textProperty().addListener(new ChangeListener<String>() {
+
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (newValue.matches("[0-9]+[.]?[0-9]*")) {
@@ -37,7 +38,9 @@ public class ManageEmployeeController {
                     txtSalary.setPromptText("Employee Salary");
                 } else {
                     txtETF.clear();
-                    txtSalary.setPromptText("Invalid Salary");
+                    if (newValue.length() > 0) {
+                        txtSalary.setPromptText("Invalid Salary");
+                    }
                 }
             }
         });
@@ -74,12 +77,12 @@ public class ManageEmployeeController {
         Statement stm = connection.createStatement();
         ResultSet rst = stm.executeQuery("SELECT * FROM Employee ORDER BY id DESC LIMIT 1");
         String newEmployeeId = "E001";
+
         if (rst.next()) {
             String lastEmployeeId = rst.getString(1);
-            newEmployeeId = String.format("E%03d" , (Integer.parseInt(lastEmployeeId.substring(1)) + 1));
+            newEmployeeId = String.format("E%03d", (Integer.parseInt(lastEmployeeId.substring(1)) + 1));
         }
         txtId.setText(newEmployeeId);
-        connection.close();
     }
 
     public void btnSave_OnAction(ActionEvent actionEvent) {
