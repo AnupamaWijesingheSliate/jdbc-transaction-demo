@@ -34,7 +34,7 @@ VALUES ('E003', 'Appu');
 INSERT INTO Employee
 VALUES ('E004', 'Weerea');
 
-# Inserting records to Employee salary table
+-- Inserting records to Employee salary table
 INSERT INTO Employee_Salary
 VALUES ('E001', 2000);
 INSERT INTO Employee_Salary
