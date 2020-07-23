@@ -17,10 +17,10 @@
          </font>
       </Label>
       <JFXButton layoutX="32.0" layoutY="56.0" onAction="#btnNewEmployee_OnAction" style="-fx-background-color: blue; -fx-text-fill: white;" text="New Employee +" />
-      <JFXTextField labelFloat="true" layoutX="32.0" layoutY="96.0" onAction="#txtId" prefHeight="26.0" prefWidth="457.0" promptText="Employee ID" />
-      <JFXTextField labelFloat="true" layoutX="32.0" layoutY="139.0" onAction="#txtName" prefHeight="26.0" prefWidth="457.0" promptText="Employee Name" />
-      <JFXTextField labelFloat="true" layoutX="32.0" layoutY="187.0" onAction="#txtSalary" prefHeight="26.0" prefWidth="326.0" promptText="Employee Salary" />
-      <JFXTextField editable="false" labelFloat="true" layoutX="372.0" layoutY="187.0" onAction="#txtETF" prefHeight="26.0" prefWidth="116.0" promptText="ETF" />
+      <JFXTextField labelFloat="true" layoutX="32.0" layoutY="96.0" fx:id="txtId" prefHeight="26.0" prefWidth="457.0" promptText="Employee ID" />
+      <JFXTextField labelFloat="true" layoutX="32.0" layoutY="139.0" fx:id="txtName" prefHeight="26.0" prefWidth="457.0" promptText="Employee Name" />
+      <JFXTextField labelFloat="true" layoutX="32.0" layoutY="187.0" fx:id="txtSalary" prefHeight="26.0" prefWidth="326.0" promptText="Employee Salary" />
+      <JFXTextField editable="false" labelFloat="true" layoutX="372.0" layoutY="187.0" fx:id="txtETF" prefHeight="26.0" prefWidth="116.0" promptText="ETF" />
       <JFXButton layoutX="231.0" layoutY="226.0" onAction="#btnSave_OnAction" prefHeight="26.0" prefWidth="65.0" style="-fx-background-color: green; -fx-text-fill: white;" text="Save" />
       <TableView fx:id="tblEmployee" layoutX="22.0" layoutY="266.0" prefHeight="200.0" prefWidth="475.0">
         <columns>
